@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InfoGram - Global Hub</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;500;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* --- [Theme] --- */
+        :root {
+            --bg-color: #fafafa;
+            --card-bg: #ffffff;
+            --text-main: #111111;
+            --text-sub: #767676;
+            --accent: #2563eb;
+            --story-gradient: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+            --logo-gradient: linear-gradient(135deg, #2563eb 0%, #a855f7 100%);
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Outfit', "Noto Sans SC", sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            padding-bottom: 70px;
+            overflow-x: hidden;
+        }
+
+        /* --- [Header] --- */
+        header {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 2000;
+            background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid #f0f0f0;
+            display: flex; flex-direction: column;
+            align-items: center;
+        }
+        
+        .header-inner {
+            width: 100%; max-width: 1400px;
+        }
+
+        .header-top {
+            padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;
+        }
+        
+        .logo-area { display: flex; align-items: center; gap: 6px; cursor: pointer; }
+        .logo-icon {
+            font-size: 1.4rem; background: var(--logo-gradient);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        }
+        .logo-text { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.5px; color: #1a1a1a; }
+        .logo-dot { color: #2563eb; }
+
+        .header-actions { display: flex; align-items: center; gap: 12px; }
+        .notification-wrap { position: relative; font-size: 22px; color: #374151; cursor: pointer; }
+        .notification-wrap.alert { animation: bellShake 0.5s ease-in-out infinite; color: #ff3b30; }
+        .red-dot {
+            position: absolute; top: 0; right: 0; width: 8px; height: 8px;
+            background: #ff3b30; border-radius: 50%; border: 1px solid #fff; display: none;
+        }
+        @keyframes bellShake { 0% { transform: rotate(0); } 25% { transform: rotate(15deg); } 50% { transform: rotate(0); } 75% { transform: rotate(-15deg); } 100% { transform: rotate(0); } }
+
+        .lang-selector {
+            border: 1px solid #e5e7eb; padding: 6px 10px; border-radius: 8px;
+            background: #fff; font-size: 0.85rem; font-weight: 700; color: #374151;
+            cursor: pointer; outline: none; transition: 0.2s;
+        }
+        .lang-selector:hover { border-color: var(--accent); color: var(--accent); }
+
+        /* 스토리 */
+        .stories-container {
+            width: 100%; border-bottom: 1px solid #f0f0f0; background: #fff;
+            display: flex; justify-content: center;
+        }
+        .story-scroll-view {
+            width: 100%; max-width: 1400px;
+            overflow-x: auto; white-space: nowrap; -ms-overflow-style: none; scrollbar-width: none;
+            padding: 15px 0;
+        }
+        .story-scroll-view::-webkit-scrollbar { display: none; }
+
+        .story-wrapper { display: inline-flex; gap: 20px; padding: 0 20px; }
+        
+        .story-item { display: flex; flex-direction: column; align-items: center; cursor: pointer; transition: transform 0.2s; }
+        .story-item:hover { transform: translateY(-3px); }
+        .story-ring {
+            width: 68px; height: 68px; border-radius: 50%; padding: 2px;
+            background: var(--story-gradient); display: flex; align-items: center; justify-content: center;
+        }
+        /* Menu Colors */
+        .story-ring.news { background: linear-gradient(135deg, #10b981, #059669); }
+        .story-ring.tech { background: linear-gradient(135deg, #3b82f6, #8b5cf6); }
+        .story-ring.biz { background: linear-gradient(135deg, #1e3a8a, #d97706); }
+        .story-ring.coin { background: linear-gradient(135deg, #f59e0b, #fbbf24); }
+        .story-ring.video { background: linear-gradient(135deg, #ef4444, #f97316); }
+        
+        .story-img {
+            width: 60px; height: 60px; background: #fff; border-radius: 50%; border: 3px solid #fff;
+            display: flex; align-items: center; justify-content: center; font-size: 26px;
+        }
+        .story-name { font-size: 12px; margin-top: 6px; font-weight: 600; color: #4b5563; }
+
+        /* 검색창 */
+        .search-area { width: 100%; padding: 10px 20px 15px 20px; }
+        .search-input {
+            width: 100%; padding: 12px 18px; border-radius: 12px; border: 1px solid #e5e7eb;
+            background: #f9fafb; font-size: 0.95rem; outline: none; transition: 0.3s;
+        }
+        .search-input:focus { background: #fff; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
+
+        /* --- [Main Layout Grid (PC)] --- */
+        .main-layout {
+            max-width: 1400px; margin: 210px auto 0; padding: 0 20px;
+            display: grid;
+            grid-template-columns: 1fr 320px; 
+            gap: 30px;
+            min-height: 100vh;
+        }
+
+        /* --- [Left: Feed] --- */
+        .feed-section { width: 100%; }
+        
+        .feed-grid { 
+            display: grid; 
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
+            gap: 25px; 
+        }
+        
+        .card {
+            background: var(--card-bg); border: 1px solid #e5e7eb; border-radius: 16px;
+            cursor: pointer; overflow: hidden; height: 100%; display: flex; flex-direction: column;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); }
+        .card-header { padding: 15px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #f9fafb; }
+        .source-icon { width: 36px; height: 36px; border-radius: 10px; background: #f3f4f6; object-fit: cover; }
+        .source-name { font-weight: 700; font-size: 14px; color: #1f2937; }
+        .card-media { width: 100%; aspect-ratio: 16/9; background: #eee; overflow: hidden; position: relative; }
+        .card-media img { width: 100%; height: 100%; object-fit: cover; transition: 0.4s; }
+        .card:hover .card-media img { transform: scale(1.05); }
+        .card-body { padding: 18px; flex: 1; display: flex; flex-direction: column; }
+        .card-title { font-weight: 800; font-size: 1.1rem; margin-bottom: 8px; line-height: 1.4; color: #111; }
+        .card-desc { font-size: 0.95rem; color: #4b5563; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; line-height: 1.6; }
+        .card-actions { margin-top: auto; padding-top: 15px; display: flex; gap: 15px; font-size: 20px; color: #9ca3af; }
+
+        /* --- [Right: Sidebar (History)] --- */
+        .sidebar-section { position: relative; }
+        .history-box {
+            position: sticky; top: 210px; 
+            background: #fff; border: 1px solid #e5e7eb; border-radius: 16px;
+            padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            max-height: calc(100vh - 250px); overflow-y: auto;
+        }
+        .history-title { font-weight: 800; font-size: 1.1rem; margin-bottom: 15px; color: #1a1a1a; display: flex; justify-content: space-between; align-items: center; }
+        .clear-btn { font-size: 0.8rem; color: #ef4444; cursor: pointer; }
+        .history-item { display: flex; gap: 10px; margin-bottom: 15px; cursor: pointer; transition: 0.2s; }
+        .history-item:hover { opacity: 0.7; }
+        .h-thumb { width: 90px; height: 50px; border-radius: 6px; object-fit: cover; background: #eee; flex-shrink: 0; }
+        .h-info { display: flex; flex-direction: column; justify-content: center; }
+        .h-title { font-size: 0.85rem; font-weight: 700; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .h-channel { font-size: 0.75rem; color: #888; margin-top: 3px; }
+        .empty-history { text-align: center; color: #999; font-size: 0.9rem; padding: 20px 0; }
+
+        /* --- [Player] --- */
+        #fixedPlayer {
+            position: fixed; top: 200px; left: 0; width: 100%; z-index: 1900;
+            background: rgba(0,0,0,0.8); display: none; transition: top 0.3s;
+        }
+        #fixedPlayer.sticky-top { top: 0 !important; z-index: 2100; background: #000; }
+        .player-content-wrapper { max-width: 800px; margin: 0 auto; background: #000; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        #fixedPlayer.sticky-top .player-content-wrapper { max-width: 100%; }
+        .video-container { position: relative; width: 100%; padding-bottom: 56.25%; background: #000; }
+        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none; }
+        .player-controls { background: #111; color: #fff; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .close-player-btn { background: none; border: none; color: #fff; font-size: 1.3rem; cursor: pointer; }
+
+        /* --- [AI Result] --- */
+        .ai-result-box { width: 100%; background: #fff; border-radius: 16px; border: 1px solid #e5e7eb; display: none; overflow: hidden; margin-bottom: 30px; }
+        .ai-header-area { padding: 15px 25px; background: linear-gradient(to right, #f8fafc, #fff); display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #eee; }
+        .ai-loader { width: 22px; height: 22px; border: 3px solid #eee; border-top: 3px solid var(--accent); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .ai-image-gen img { width: 100%; height: 250px; object-fit: cover; display: none; }
+        .ai-body { padding: 25px; font-size: 1rem; line-height: 1.6; color: #333; }
+
+        /* 페이지네이션 */
+        .pagination-container { display: flex; justify-content: center; gap: 10px; margin: 50px 0 100px 0; }
+        .page-btn { width: 45px; height: 45px; border-radius: 12px; background: #fff; border: 1px solid #e5e7eb; display: flex; align-items: center; justify-content: center; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .page-btn:hover { background: #f3f4f6; }
+        .page-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+        /* 하단 탭 */
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; height: 65px; background: rgba(255,255,255,0.95); border-top: 1px solid #e5e7eb; backdrop-filter: blur(10px); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .nav-inner { max-width: 600px; width: 100%; display: flex; justify-content: space-around; }
+        .nav-item { font-size: 24px; color: #9ca3af; cursor: pointer; transition: 0.2s; }
+        .nav-item.active { color: var(--accent); transform: scale(1.1); }
+
+        /* [모바일 대응] */
+        @media (max-width: 1000px) {
+            .main-layout { grid-template-columns: 1fr; margin-top: 180px; }
+            .sidebar-section { display: none; } 
+            .feed-grid { grid-template-columns: 1fr; }
+            #fixedPlayer { top: 180px; }
+            .player-content-wrapper { max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+
+    <header id="mainHeader">
+        <div class="header-inner">
+            <div class="header-top">
+                <div class="logo-area" onclick="location.href='https://minetia.github.io/home/'">
+                    <i class="fas fa-layer-group logo-icon"></i>
+                    <span class="logo-text">InfoGram<span class="logo-dot">.</span></span>
+                </div>
+                
+                <div class="header-actions">
+                    <div class="notification-wrap" id="bellIcon" onclick="updateData()">
+                        <i class="far fa-bell"></i>
+                        <div class="red-dot" id="notiDot"></div>
+                    </div>
+                    <select class="lang-selector" id="langSelect" onchange="changeLanguage()">
+                        <option value="ko">KR</option>
+                        <option value="en">EN</option>
+                        <option value="jp">JP</option>
+                        <option value="zh">CN</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="stories-container">
+                <div class="story-scroll-view">
+                    <div class="story-wrapper">
+                        <div class="story-item" onclick="location.href='https://minetia.github.io/News/'">
+                            <div class="story-ring news"><div class="story-img">📰</div></div>
+                            <div class="story-name">News</div>
+                        </div>
+                        
+                        <div class="story-item" onclick="location.href='https://minetia.github.io/tech/'">
+                            <div class="story-ring tech"><div class="story-img">💻</div></div>
+                            <div class="story-name">Tech</div>
+                        </div>
+                        <div class="story-item" onclick="location.href='https://minetia.github.io/business/'">
+                            <div class="story-ring biz"><div class="story-img">💰</div></div>
+                            <div class="story-name">Business</div>
+                        </div>
+                        <div class="story-item" onclick="location.href='https://minetia.github.io/coin/'">
+                            <div class="story-ring coin"><div class="story-img">🪙</div></div>
+                            <div class="story-name">Crypto</div>
+                        </div>
+                        <div class="story-item" onclick="location.href='https://minetia.github.io/video/'">
+                            <div class="story-ring video"><div class="story-img">🎬</div></div>
+                            <div class="story-name">Video</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="search-area">
+                <input type="text" class="search-input" id="searchInput" placeholder="검색 (뉴스, 이슈, 트렌드)..." onkeyup="handleSearch(event)">
+            </div>
+        </div>
+    </header>
+
+    <div id="fixedPlayer">
+        <div class="player-content-wrapper">
+            <div class="video-container" id="playerFrameArea"></div>
+            <div class="player-controls">
+                <span style="font-size:13px; font-weight:700; color:#fff;" id="nowPlayingText">NOW PLAYING</span>
+                <button class="close-player-btn" onclick="closePlayer()"><i class="fas fa-times"></i></button>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-layout">
+        
+        <main class="feed-section">
+            <div id="aiResult" class="ai-result-box">
+                <div class="ai-header-area">
+                    <div class="ai-loader" id="aiLoader"></div>
+                    <span style="font-weight:700; color:#1a1a1a;" id="aiTitle">AI Analyzing...</span>
+                </div>
+                <div class="ai-image-gen" id="aiImageArea">
+                    <img id="aiGeneratedImg" src="" alt="AI Gen">
+                </div>
+                <div class="ai-body" id="aiContent"></div>
+            </div>
+
+            <div class="feed-grid" id="feedContainer"></div>
+            <div class="pagination-container" id="paginationContainer"></div>
+        </main>
+
+        <aside class="sidebar-section">
+            <div class="history-box">
+                <div class="history-title">
+                    <span>🕒 History</span>
+                    <span class="clear-btn" onclick="clearHistory()">Clear</span>
+                </div>
+                <div id="historyList">
+                    <div class="empty-history">최근 본 영상이 없습니다.</div>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-inner">
+            <div class="nav-item active" onclick="location.href='https://minetia.github.io/home/'"><i class="fas fa-home"></i></div>
+            <div class="nav-item"><i class="fas fa-search"></i></div>
+            <div class="nav-item"><i class="far fa-plus-square"></i></div>
+            <div class="nav-item" onclick="location.href='https://minetia.github.io/video/'"><i class="fas fa-video"></i></div>
+        </div>
+    </div>
+
+    <script>
+        const YOUTUBE_API_KEY = 'AIzaSyBlKZbCP6qZiv3NLBmgh4iled9Y4BmCUM8'; 
+        const API_URL = 'https://www.googleapis.com/youtube/v3/search';
+        
+        const TOTAL_ITEMS = 40;
+        const ITEMS_PER_PAGE = 12;
+        let allData = [];
+        let currentPage = 1;
+        let currentLang = 'ko'; 
+
+        // --- 1. 검색 및 AI ---
+        async function handleSearch(e) {
+            if (e.key === 'Enter') {
+                const query = document.getElementById('searchInput').value;
+                if (!query) return;
+                
+                closePlayer();
+                document.getElementById('aiResult').style.display = 'block';
+                
+                resetAI(query);
+                generateAI(query);
+                await searchYouTubeReal(query);
+            }
+        }
+
+        function resetAI(query) {
+            const box = document.getElementById('aiResult');
+            box.style.display = 'block';
+            document.getElementById('aiLoader').style.display = 'block';
+            document.getElementById('aiImageArea').querySelector('img').style.display = 'none';
+            
+            let loadingText = `'${query}' 분석 중...`;
+            if(currentLang === 'en') loadingText = `Thinking about '${query}'...`;
+            else if(currentLang === 'jp') loadingText = `'${query}' 分析中...`;
+            else if(currentLang === 'zh') loadingText = `'${query}' 分析中...`;
+
+            document.getElementById('aiTitle').innerText = loadingText;
+            document.getElementById('aiContent').innerText = '';
+            document.getElementById('paginationContainer').innerHTML = '';
+        }
+
+        function generateAI(query) {
+            const imgTag = document.getElementById('aiGeneratedImg');
+            imgTag.src = `https://image.pollinations.ai/prompt/${encodeURIComponent(query + " high quality realistic news")}`;
+            imgTag.onload = () => { imgTag.style.display = 'block'; };
+
+            setTimeout(() => {
+                document.getElementById('aiLoader').style.display = 'none';
+                document.getElementById('aiTitle').innerText = `AI Insight: ${query}`;
+                
+                let text = "";
+                if (currentLang === 'ko') {
+                    text = `<strong>💡 AI 분석 결과</strong><br>"${query}"에 대한 글로벌 트렌드 분석이 완료되었습니다. 현재 관련 검색량이 급증하고 있으며, 주요 미디어에서 심도 있게 다루고 있습니다.`;
+                } else if (currentLang === 'jp') {
+                    text = `<strong>💡 AI 分析結果</strong><br>"${query}" に関するグローバルトレンド分析が完了しました。現在、関連検索量が急増しており、主要メディアで深く取り上げられています。`;
+                } else if (currentLang === 'zh') {
+                    text = `<strong>💡 AI 分析结果</strong><br>关于 "${query}" 的全球趋势分析已完成。目前相关搜索量激增，主要媒体正在深入报道此话题。`;
+                } else {
+                    text = `<strong>💡 AI Analysis</strong><br>Global trend analysis for "${query}" is complete. Search volume is spiking, and major media outlets are covering this topic in depth.`;
+                }
+                document.getElementById('aiContent').innerHTML = text;
+            }, 1500);
+        }
+
+        async function searchYouTubeReal(query) {
+            try {
+                const url = `${API_URL}?part=snippet&maxResults=12&q=${encodeURIComponent(query)}&type=video&key=${YOUTUBE_API_KEY}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                if (data.error) throw new Error(data.error.message);
+                renderFeed(data.items, true); 
+            } catch (error) {
+                console.warn("API Error:", error);
+                renderMockData(query);
+            }
+        }
+
+        // --- 2. 가상 데이터 ---
+        function generateVirtualData() {
+            const topics = {
+                ko: ['국제 뉴스', '테크 혁신', '우주 탐사', '글로벌 경제', 'K-POP', '문화 트렌드', '건강 정보', '여행 브이로그'],
+                en: ['Global News', 'Tech Innovation', 'Space Exploration', 'Global Economy', 'Pop Music', 'Cultural Trends', 'Health Tips', 'Travel Vlog'],
+                jp: ['国際ニュース', '技術革新', '宇宙探査', '世界経済', 'K-POP', '文化トレンド', '健康情報', '旅行Vlog'],
+                zh: ['国际新闻', '科技创新', '太空探索', '全球经济', '流行音乐', '文化潮流', '健康贴士', '旅游视频']
+            };
+            const channels = ['BBC', 'CNN', 'Reuters', 'YTN', 'NHK', 'CCTV', 'TechCrunch', 'NatGeo'];
+            
+            const generated = [];
+            for (let i = 1; i <= TOTAL_ITEMS; i++) {
+                const langKey = currentLang;
+                const topic = topics[langKey][Math.floor(Math.random() * topics[langKey].length)];
+                const channel = channels[Math.floor(Math.random() * channels.length)];
+                
+                let title = `[Daily Update] ${topic} : Global Report #${i}`;
+                if (currentLang === 'ko') title = `[일일 브리핑] ${topic} : 글로벌 리포트 #${i}`;
+                else if (currentLang === 'jp') title = `[デイリー] ${topic} : グローバルレポート #${i}`;
+                else if (currentLang === 'zh') title = `[每日简报] ${topic} : 全球报告 #${i}`;
+
+                generated.push({
+                    videoId: 'HK6y8DAPN_0',
+                    snippet: {
+                        title: title,
+                        description: `API quota saving mode. Click to watch sample video.`,
+                        thumbnails: { medium: { url: `https://picsum.photos/600/400?random=${i + Math.random()}` } },
+                        channelTitle: channel,
+                        publishedAt: new Date().toISOString()
+                    }
+                });
+            }
+            return generated;
+        }
+
+        function initData() {
+            allData = generateVirtualData();
+            renderPage(1);
+            showNotification();
+            loadHistory();
+        }
+
+        function changeLanguage() {
+            currentLang = document.getElementById('langSelect').value;
+            const searchInput = document.getElementById('searchInput');
+            const nowPlaying = document.getElementById('nowPlayingText');
+
+            if (currentLang === 'ko') {
+                searchInput.placeholder = "검색 (뉴스, 이슈, 트렌드)...";
+                nowPlaying.innerText = "재생 중...";
+            } else if (currentLang === 'jp') {
+                searchInput.placeholder = "検索 (ニュース, トレンド)...";
+                nowPlaying.innerText = "再生中...";
+            } else if (currentLang === 'zh') {
+                searchInput.placeholder = "搜索 (新闻, 趋势, 热点)...";
+                nowPlaying.innerText = "播放中...";
+            } else {
+                searchInput.placeholder = "Search (News, Trends)...";
+                nowPlaying.innerText = "NOW PLAYING";
+            }
+            updateData();
+        }
+
+        function updateData() {
+            document.getElementById('bellIcon').classList.remove('alert');
+            document.getElementById('notiDot').style.display = 'none';
+            document.getElementById('feedContainer').innerHTML = `<div style="text-align:center; padding:100px; grid-column:1/-1;"><i class="fas fa-spinner fa-spin fa-2x"></i><br>Updating...</div>`;
+            setTimeout(() => {
+                allData = generateVirtualData();
+                renderPage(1);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }, 500);
+        }
+
+        function showNotification() {
+            document.getElementById('bellIcon').classList.add('alert');
+            document.getElementById('notiDot').style.display = 'block';
+        }
+
+        // --- 3. 렌더링 ---
+        function renderPage(page) {
+            currentPage = page;
+            const start = (page - 1) * ITEMS_PER_PAGE;
+            const end = start + ITEMS_PER_PAGE;
+            const itemsToShow = allData.slice(start, end);
+            renderFeed(itemsToShow, false);
+            renderPaginationBtns();
+        }
+
+        function renderPaginationBtns() {
+            const container = document.getElementById('paginationContainer');
+            container.innerHTML = '';
+            const totalPages = Math.ceil(allData.length / ITEMS_PER_PAGE);
+            for (let i = 1; i <= totalPages; i++) {
+                const btn = document.createElement('div');
+                btn.className = `page-btn ${i === currentPage ? 'active' : ''}`;
+                btn.innerText = i;
+                btn.onclick = () => { renderPage(i); window.scrollTo({ top: 0, behavior: 'smooth' }); };
+                container.appendChild(btn);
+            }
+        }
+
+        function renderFeed(items, isRealApi = false) {
+            const container = document.getElementById('feedContainer');
+            container.innerHTML = ''; 
+
+            items.forEach(item => {
+                const videoId = isRealApi ? item.id.videoId : item.videoId;
+                const snippet = isRealApi ? item.snippet : item.snippet;
+                const thumb = snippet.thumbnails.medium.url;
+                const title = snippet.title;
+                const channel = snippet.channelTitle;
+                
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.onclick = () => playVideo(videoId, title, channel, thumb);
+                
+                card.innerHTML = `
+                    <div class="card-header">
+                        <img src="https://ui-avatars.com/api/?name=${channel.substring(0,2)}&background=random&color=fff" class="source-icon">
+                        <div class="source-name">${channel}</div>
+                    </div>
+                    <div class="card-media">
+                        <img src="${thumb}" alt="Thumbnail">
+                        <i class="fas fa-play-circle" style="position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); font-size:50px; color:rgba(255,255,255,0.9);"></i>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-title">${title}</div>
+                        <div class="card-desc">${snippet.description}</div>
+                        <div class="card-actions">
+                            <i class="far fa-heart"></i><i class="far fa-comment"></i><div style="margin-left:auto;"><i class="far fa-bookmark"></i></div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function renderMockData(query) {
+            allData = generateVirtualData();
+            renderPage(1);
+        }
+
+        // --- 4. 플레이어 & 히스토리 ---
+        function playVideo(videoId, title, channel, thumb) {
+            const player = document.getElementById('fixedPlayer');
+            const frame = document.getElementById('playerFrameArea');
+            const headerHeight = document.querySelector('header').offsetHeight;
+
+            player.style.display = 'block';
+            player.classList.remove('sticky-top');
+            player.style.top = (headerHeight + 20) + 'px'; 
+
+            frame.innerHTML = `<iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&playsinline=1" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            if(title && channel) {
+                saveToHistory({ videoId, title, channel, thumb });
+            }
+        }
+
+        function closePlayer() {
+            const player = document.getElementById('fixedPlayer');
+            document.getElementById('playerFrameArea').innerHTML = '';
+            player.style.display = 'none';
+            player.classList.remove('sticky-top');
+        }
+
+        function saveToHistory(item) {
+            let history = JSON.parse(localStorage.getItem('watchHistory')) || [];
+            history = history.filter(h => h.videoId !== item.videoId);
+            history.unshift(item);
+            if(history.length > 20) history.pop();
+            localStorage.setItem('watchHistory', JSON.stringify(history));
+            renderHistory();
+        }
+
+        function loadHistory() {
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const history = JSON.parse(localStorage.getItem('watchHistory')) || [];
+            const container = document.getElementById('historyList');
+            container.innerHTML = '';
+
+            if (history.length === 0) {
+                container.innerHTML = '<div class="empty-history">최근 본 영상이 없습니다.</div>';
+                return;
+            }
+
+            history.forEach(h => {
+                const div = document.createElement('div');
+                div.className = 'history-item';
+                div.onclick = () => playVideo(h.videoId);
+                div.innerHTML = `
+                    <img src="${h.thumb}" class="h-thumb">
+                    <div class="h-info">
+                        <div class="h-title">${h.title}</div>
+                        <div class="h-channel">${h.channel}</div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        function clearHistory() {
+            localStorage.removeItem('watchHistory');
+            renderHistory();
+        }
+
+        window.addEventListener('scroll', () => {
+            const player = document.getElementById('fixedPlayer');
+            if(player.style.display !== 'block') return;
+            if (window.scrollY > 100) player.classList.add('sticky-top');
+            else if (window.scrollY < 10) player.classList.remove('sticky-top');
+        });
+
+        const TWELVE_HOURS = 12 * 60 * 60 * 1000;
+        setInterval(() => { initData(); }, TWELVE_HOURS);
+
+        initData();
+
+    </script>
+</body>
+</html>
