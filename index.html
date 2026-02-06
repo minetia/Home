@@ -36,13 +36,9 @@
             align-items: center;
         }
         
-        .header-inner {
-            width: 100%; max-width: 1400px;
-        }
+        .header-inner { width: 100%; max-width: 1400px; }
 
-        .header-top {
-            padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;
-        }
+        .header-top { padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
         
         .logo-area { display: flex; align-items: center; gap: 6px; cursor: pointer; }
         .logo-icon {
@@ -109,7 +105,7 @@
         }
         .search-input:focus { background: #fff; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(37,99,235,0.1); }
 
-        /* --- [Main Layout Grid (PC)] --- */
+        /* --- [Layout Grid] --- */
         .main-layout {
             max-width: 1400px; margin: 210px auto 0; padding: 0 20px;
             display: grid;
@@ -120,13 +116,11 @@
 
         /* --- [Left: Feed] --- */
         .feed-section { width: 100%; }
-        
         .feed-grid { 
             display: grid; 
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); 
             gap: 25px; 
         }
-        
         .card {
             background: var(--card-bg); border: 1px solid #e5e7eb; border-radius: 16px;
             cursor: pointer; overflow: hidden; height: 100%; display: flex; flex-direction: column;
@@ -210,7 +204,7 @@
     <header id="mainHeader">
         <div class="header-inner">
             <div class="header-top">
-                <div class="logo-area" onclick="location.href='https://minetia.github.io/home/'">
+                <div class="logo-area" onclick="location.href='https://minetia.github.io/Home/'">
                     <i class="fas fa-layer-group logo-icon"></i>
                     <span class="logo-text">InfoGram<span class="logo-dot">.</span></span>
                 </div>
@@ -236,7 +230,6 @@
                             <div class="story-ring news"><div class="story-img">📰</div></div>
                             <div class="story-name">News</div>
                         </div>
-                        
                         <div class="story-item" onclick="location.href='https://minetia.github.io/tech/'">
                             <div class="story-ring tech"><div class="story-img">💻</div></div>
                             <div class="story-name">Tech</div>
@@ -307,7 +300,7 @@
 
     <div class="bottom-nav">
         <div class="nav-inner">
-            <div class="nav-item active" onclick="location.href='https://minetia.github.io/home/'"><i class="fas fa-home"></i></div>
+            <div class="nav-item active" onclick="location.href='https://minetia.github.io/Home/'"><i class="fas fa-home"></i></div>
             <div class="nav-item"><i class="fas fa-search"></i></div>
             <div class="nav-item"><i class="far fa-plus-square"></i></div>
             <div class="nav-item" onclick="location.href='https://minetia.github.io/video/'"><i class="fas fa-video"></i></div>
@@ -319,7 +312,7 @@
         const API_URL = 'https://www.googleapis.com/youtube/v3/search';
         
         const TOTAL_ITEMS = 40;
-        const ITEMS_PER_PAGE = 12;
+        const ITEMS_PER_PAGE = 12; // Grid Mode
         let allData = [];
         let currentPage = 1;
         let currentLang = 'ko'; 
@@ -344,13 +337,7 @@
             box.style.display = 'block';
             document.getElementById('aiLoader').style.display = 'block';
             document.getElementById('aiImageArea').querySelector('img').style.display = 'none';
-            
-            let loadingText = `'${query}' 분석 중...`;
-            if(currentLang === 'en') loadingText = `Thinking about '${query}'...`;
-            else if(currentLang === 'jp') loadingText = `'${query}' 分析中...`;
-            else if(currentLang === 'zh') loadingText = `'${query}' 分析中...`;
-
-            document.getElementById('aiTitle').innerText = loadingText;
+            document.getElementById('aiTitle').innerText = currentLang === 'ko' ? `'${query}' 분석 중...` : `Thinking about '${query}'...`;
             document.getElementById('aiContent').innerText = '';
             document.getElementById('paginationContainer').innerHTML = '';
         }
